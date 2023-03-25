@@ -1,4 +1,4 @@
-import { Controller, Get, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, ForbiddenException, Get, HttpException, HttpStatus, UseFilters } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -12,9 +12,6 @@ export class AppController {
 
   @Get('forbidden')
   getForbidden() {
-    throw new HttpException({
-      description: 'error?',
-      errorCode: HttpStatus.FORBIDDEN,
-    }, HttpStatus.FORBIDDEN)
+    throw new ForbiddenException()
   }
 }

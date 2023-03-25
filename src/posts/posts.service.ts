@@ -1,4 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { v4 as uuidv4 } from 'uuid';
+
 import CreatePostDto from "./dto/createPost.dto";
 import UpdatePostDto from "./dto/updatePost.dto";
 import { Post } from "./interface/post.interface";
@@ -12,15 +14,15 @@ export default class PostsService {
   }
 
   createPost(createPostDto: CreatePostDto) {
-    const lastId = this.posts[this.posts.length - 1]?.id ?? 0
-    this.posts.push({
-      id: lastId + 1,
+    const newPost = {
+      id: uuidv4(),
       ...createPostDto
-    })
-    return this.posts[this.posts.length - 1]?.id ?? -1
+    }
+    this.posts.push(newPost)
+    return newPost
   }
 
-  updatePost(postId: Number, updatePostDto: UpdatePostDto) {
+  updatePost(postId: string, updatePostDto: UpdatePostDto) {
     const updateIndex = this.posts.findIndex(post => post.id === postId)
 
     if (updateIndex !== -1) {
@@ -28,22 +30,31 @@ export default class PostsService {
         ...this.posts[updateIndex],
         ...updatePostDto,
       }
+
+      return this.posts[updateIndex]
     }
 
-    return updateIndex
+    throw new HttpException('Post not found', HttpStatus.NOT_FOUND)
   }
 
-  deletePost(postId: Number) {
+  deletePost(postId: string) {
     const deleteIndex = this.posts.findIndex(post => post.id === postId)
 
     if (deleteIndex !== -1) {
       this.posts.splice(deleteIndex, 1)
+      return {
+        success: true
+      }
     }
 
-    return deleteIndex
+    throw new HttpException('Post not found', HttpStatus.NOT_FOUND)
   }
 
-  findPost(postId: Number) {
-    return this.posts.find(post => post.id === postId)
+  findPost(postId: string) {
+    const post = this.posts.find(post => post.id === postId)
+    if (!!post) {
+      return post
+    }
+    throw new HttpException('Post not found', HttpStatus.NOT_FOUND)
   }
 }

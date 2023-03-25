@@ -14,53 +14,21 @@ export default class PostsController {
 
   @Post()
   addPost(@Body() createPostDto: CreatePostDto) {
-    const newPostId = this.postsService.createPost(createPostDto)
-
-    if (newPostId !== -1) {
-      return {
-        success: true
-      }
-    } else {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR)
-    }
+    return this.postsService.createPost(createPostDto)
   }
 
   @Put(':id')
   updatePost(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    const postId = Number(id)
-
-    const updatedIndex = this.postsService.updatePost(postId, updatePostDto)
-    if (updatedIndex !== -1) {
-      return {
-        success: true
-      }
-    } else {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR)
-    }
+    return this.postsService.updatePost(id, updatePostDto)
   }
 
   @Delete(':id')
   deletePost(@Param('id') id: string) {
-    const postId = Number(id)
-
-    const deleteIndex = this.postsService.deletePost(postId)
-    if (deleteIndex !== -1) {
-      return {
-        success: true
-      }
-    } else {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR)
-    }
+    return this.postsService.deletePost(id)
   }
 
   @Get(':id')
   findPost(@Param('id') id: string) {
-    const post = this.postsService.findPost(Number(id))
-
-    if (!!post) {
-      return post
-    } else {
-      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR)
-    }
+    return this.postsService.findPost(id)
   }
 }
